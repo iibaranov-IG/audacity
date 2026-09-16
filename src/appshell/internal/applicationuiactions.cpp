@@ -76,8 +76,8 @@ const UiActionList ApplicationUiActions::m_actions = {
              TranslatableString("action", "About &Qt…")
              ),
     UiAction("online-handbook",
-             au::context::UiCtxUnknown,
-             au::context::CTX_DISABLED,
+             au::context::UiCtxAny,
+             au::context::CTX_ANY,
              //: Action title: shown as a menu item or a button label; keep it short
              TranslatableString("action", "Online &handbook"),
              //: Action description: shown as a tooltip; can be a full sentence
