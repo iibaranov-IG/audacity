@@ -23,7 +23,7 @@ const std::vector<std::pair<double, IntervalInfo> > zoomToIntervalInfo = {
     { 28 / 0.05, { 0.5, 0.25, 0.05, 2 } },                          // 0.05s ticks
     { 24 / 0.1, { 1.0, 0.5, 0.1, 1 } },                             // 0.1s ticks
     { 32 / 0.5, { 5.0, 1.0, 0.5, 0 } },                             // 0.5s ticks
-    { 28 / 0.5, { 5.0, 2.5, 0.5, 0 } },                             // 0.5s ticks
+    { 28 / 0.5, { 5.0, 2.5, 0.5, 1 } },                             // 0.5s ticks
     { 24 / 1.0, { 30.0, 5.0, 1.0, 0 } },                            // 1s ticks
     { 24 / 5.0, { 60.0, 15.0, 5.0, 0 } },                           // 5s ticks
     { 24 / 10.0, { 60.0, 30.0, 10.0, 0 } },                         // 10s ticks
@@ -86,6 +86,10 @@ QString TimeFormat::label(double d, const IntervalInfo& intervalInfo, TickType t
                        .arg(0, 2, 10, QChar('0'));
             }
         } else if (intervalInfo.minor > 0.5) {
+            if (intervalInfo.digits > 0) {
+                return QString::number(d, 'f', intervalInfo.digits);
+            }
+
             int secs = (int)(d + 0.5);
             if (secs >= 3600) {
                 return QString("%1:%2:%3")
