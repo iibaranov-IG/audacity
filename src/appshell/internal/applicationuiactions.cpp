@@ -278,23 +278,34 @@ void ApplicationUiActions::listenOpenedDocksChanged(IDockWindow* window)
         ActionCodeList actions;
 
         for (const ActionCode& toggleDockAction : toggleDockActions().keys()) {
-            if (dockNames.contains(toggleDockActions()[toggleDockAction])) {
+            const DockName& dockName = toggleDockActions()[toggleDockAction];
+
+            if (dockNames.contains(dockName)) {
                 actions.push_back(toggleDockAction);
             }
         }
 
-        m_actionCheckedChanged.send(actions);
+        if (!actions.empty()) {
+            m_actionCheckedChanged.send(actions);
+        }
     });
 }
 
-const UiActionList& ApplicationUiActions::actionsList() const
+const muse::ui::UiActionList& ApplicationUiActions::actionsList() const
 {
     return m_actions;
 }
 
 bool ApplicationUiActions::actionEnabled(const UiAction& act) const
 {
-    return m_controller->canReceiveAction(act.code);
+    if (!m_controller) {
+        return true;
+    }
+    if (!m_controller->canReceiveAction(act.code)) {
+        return false;
+    }
+
+    return true;
 }
 
 bool ApplicationUiActions::actionChecked(const UiAction& act) const
@@ -303,32 +314,37 @@ bool ApplicationUiActions::actionChecked(const UiAction& act) const
         return mainWindow()->isFullScreen();
     }
 
-    const QMap<ActionCode, DockName>& toggleActions = toggleDockActions();
-    if (toggleActions.contains(act.code)) {
-        const IDockWindow* window = dockWindowProvider()->window();
-        return window ? window->isDockOpen(toggleActions[act.code]) : false;
+    QMap<ActionCode, DockName> toggleDockActions = ApplicationUiActions::toggleDockActions();
+    DockName dockName = toggleDockActions.value(act.code, DockName());
+
+    if (dockName.isEmpty()) {
+        return false;
     }
 
-    return false;
+    const IDockWindow* window = dockWindowProvider()->window();
+    return window ? window->isDockOpen(dockName) : false;
 }
 
-muse::async::Channel<ActionCodeList> ApplicationUiActions::actionEnabledChanged() const
+muse::async::Channel<muse::actions::ActionCodeList> ApplicationUiActions::actionEnabledChanged() const
 {
     return m_actionEnabledChanged;
 }
 
-muse::async::Channel<ActionCodeList> ApplicationUiActions::actionCheckedChanged() const
+muse::async::Channel<muse::actions::ActionCodeList> ApplicationUiActions::actionCheckedChanged() const
 {
     return m_actionCheckedChanged;
 }
 
-const QMap<ActionCode, DockName>& ApplicationUiActions::toggleDockActions()
+const QMap<muse::actions::ActionCode, DockName>& ApplicationUiActions::toggleDockActions()
 {
-    static const QMap<ActionCode, DockName> map {
+    static const QMap<muse::actions::ActionCode, DockName> actionsMap {
         { "toggle-transport", PLAYBACK_TOOLBAR_NAME },
+
         { "toggle-tracks", TRACKS_PANEL_NAME },
+        { "toggle-history", HISTORY_PANEL_NAME },
+
         { "toggle-statusbar", PROJECT_STATUSBAR_NAME },
     };
 
-    return map;
+    return actionsMap;
 }
