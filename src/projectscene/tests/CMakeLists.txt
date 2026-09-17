@@ -9,6 +9,7 @@ set(MODULE_TEST_SRC
     ${CMAKE_CURRENT_LIST_DIR}/projectviewstate_tests.cpp
     ${CMAKE_CURRENT_LIST_DIR}/sample_tests.cpp
     ${CMAKE_CURRENT_LIST_DIR}/snaptimeformatter_tests.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/timeformat_tests.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tracklabelslayoutmanager_tests.cpp
     ${CMAKE_CURRENT_LIST_DIR}/trackitemsselection_tests.cpp
     ${CMAKE_CURRENT_LIST_DIR}/findguideline_tests.cpp
